@@ -11,6 +11,8 @@ A skill is a set of reference documents that an AI coding assistant reads on dem
 | Skill | Description |
 | --- | --- |
 | [ocp-app-development](skills/ocp-app-development) | Building, modifying, and debugging OCP apps |
+| [ocp-node22-runtime-migration](skills/ocp-node22-runtime-migration) | Migrating an OCP app from node18 to node22 runtime (SDK 1.x→2.x), with optional path to SDK 3.x |
+| [ocp-app-sdk-v3-migration](skills/ocp-app-sdk-v3-migration) | Modernizing an OCP app already on node22: app-sdk 2.x→3.x, native fetch, ESLint v9, Jest→vitest |
 
 ## Installation
 
@@ -50,49 +52,18 @@ cd ~/.copilot/ocp-skills && git pull
 
 ## Project Structure
 
+Each skill is a directory under `skills/` with a `SKILL.md` entry point and an optional `references/` directory of on-demand topic files.
+
 ```
 ocp-skills/
 └── skills/
-    └── ocp-app-development/
-        ├── SKILL.md                      # Overview, app types, building blocks, developer journey
-        └── references/                   # Loaded on demand — one file per topic
-            ├── app-yml.md                # app.yml structure and all configuration options
-            ├── function.md               # App.Function, App.GlobalFunction
-            ├── job.md                    # App.Job, prepare/perform loop, cron, pagination
-            ├── odp-schema.md             # ODP schema extensions — custom fields on ODP objects
-            ├── lifecycle/
-            │   ├── install.md            # onInstall — setup, secrets, external webhook registration
-            │   ├── settings-form.md      # onSettingsForm — saving settings, button actions
-            │   ├── oauth.md              # onAuthorizationRequest + onAuthorizationGrant
-            │   ├── uninstall.md          # onUninstall + canUninstall — cleanup
-            │   └── upgrade.md            # onUpgrade, onFinalizeUpgrade, onAfterUpgrade
-            ├── settings-forms/
-            │   ├── elements.md           # Element types — text, select, toggle, button, oauth_button
-            │   └── conditional-logic.md  # Visibility, required fields, validation rules
-            ├── data-sync/
-            │   ├── source.md             # Sources, static/dynamic schema, sources.emit()
-            │   └── destination.md        # App.Destination<T>, ready(), deliver(), deletes
-            ├── opal-tools/
-            │   ├── tool-functions.md     # ToolFunction, GlobalToolFunction
-            │   ├── tools.md              # @tool, @interaction, ParameterType, OptiID auth
-            │   └── islands-interactions.md # Island UI components and interaction handlers
-            ├── app-sdk/
-            │   ├── storage.md            # settings, secrets, kvStore, sharedKvStore
-            │   ├── notifications.md      # notifications.info/success/warn/error
-            │   └── logging.md            # logger API
-            ├── node-sdk/
-            │   ├── events.md             # z.event()
-            │   ├── customers.md          # z.customer(), identity resolution
-            │   ├── objects.md            # z.object(), custom object operations
-            │   ├── graphql.md            # z.graphql() queries and mutations
-            │   ├── schema.md             # ODP schema inspection — read schema, fields, objects
-            │   ├── identifiers.md        # Identity resolution and merging
-            │   └── lists.md              # List membership management
-            └── cli-commands/
-                ├── scaffolding.md        # ocp app init, ocp add
-                ├── validation.md         # ocp app validate, tsc
-                ├── deployment.md         # ocp app prepare, ocp directory publish/install
-                └── logging.md            # ocp app logs, get-log-level, set-log-level
+    ├── ocp-app-development/              # Building, modifying, debugging OCP apps
+    │   ├── SKILL.md
+    │   └── references/                   # On-demand topic files (app.yml, lifecycle, SDKs, CLI, …)
+    ├── ocp-node22-runtime-migration/     # node18 → node22 runtime + SDK 1→2 (optional → 3)
+    │   └── SKILL.md
+    └── ocp-app-sdk-v3-migration/         # app-sdk 2→3 modernization on node22
+        └── SKILL.md
 ```
 
 ## Contributing
