@@ -41,7 +41,7 @@ my-app/
 ├── app.yml           # Manifest — declares all components, metadata, runtime
 ├── package.json
 ├── tsconfig.json
-├── forms/            # Settings form YAML (one file per section)
+├── forms/            # Settings form YAML (forms/settings.yml)
 ├── schema/           # ODP schema extensions (add custom fields to ODP objects)
 ├── assets/           # Static resources
 └── src/
@@ -97,6 +97,7 @@ When a request comes in against an existing app rather than a new one:
 | Webhook listener (`App.Function`); global endpoint (`App.GlobalFunction`) | [references/function.md](references/function.md) |
 | Background or scheduled task (`App.Job`) — historical imports, cron scheduling | [references/job.md](references/job.md) |
 | ODP schema extensions — custom fields on ODP objects | [references/odp-schema.md](references/odp-schema.md) |
+| Lifecycle hooks — all hooks and when each one is called | [references/lifecycle/overview.md](references/lifecycle/overview.md) |
 | `onInstall` — initial setup, generating secrets, registering external webhooks | [references/lifecycle/install.md](references/lifecycle/install.md) |
 | `onSettingsForm` — saving settings, button actions, validation | [references/lifecycle/settings-form.md](references/lifecycle/settings-form.md) |
 | Settings form elements — text, select, toggle, button, oauth_button | [references/settings-forms/elements.md](references/settings-forms/elements.md) |

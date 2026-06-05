@@ -21,9 +21,12 @@ Packages, uploads, and builds the app. The project directory must be inside an i
 ocp app prepare
 ```
 
-| Flag | Description |
-| --- | --- |
-| `--publish` | Automatically publish after a successful prepare |
+| Flag                            | Description                                                             |
+|---------------------------------|-------------------------------------------------------------------------|
+| `--publish`                     | Automatically publish after a successful prepare                        |
+| `--use-previous-app-env-values` | Reuse `.env` values from the previous version — local `.env` is ignored |
+| `--bump-dev-version`            | Bump the dev version before building                                    |
+| `--upgrade-deps`                | Automatically update OCP dependencies                                   |
 
 ## Publish
 
@@ -45,8 +48,8 @@ Installs a published version into a specific account, creating an installation w
 ocp directory install <appId@version> <trackerId>
 ```
 
-| Flag | Description |
-| --- | --- |
+| Flag | Description                       |
+|------|-----------------------------------|
 | `-a` | Availability zone (default: `us`) |
 
 ## List installations
@@ -58,8 +61,8 @@ ocp directory listInstalls <appId>
 ocp directory listInstalls <appId@version>
 ```
 
-| Flag | Description |
-| --- | --- |
+| Flag | Description                       |
+|------|-----------------------------------|
 | `-a` | Availability zone (default: `us`) |
 
 Use this to find tracker IDs needed for `listFunctions` and `jobs trigger`.
@@ -72,8 +75,8 @@ Lists the deployed webhook URLs for an installation.
 ocp directory listFunctions <appId> <trackerId>
 ```
 
-| Flag | Description |
-| --- | --- |
+| Flag | Description                       |
+|------|-----------------------------------|
 | `-a` | Availability zone (default: `us`) |
 
 ## Unpublish
@@ -86,8 +89,8 @@ Removes a version from the OCP App Directory.
 ocp directory unpublish <appId@version> --no-prompt
 ```
 
-| Flag | Description |
-| --- | --- |
+| Flag | Description                       |
+|------|-----------------------------------|
 | `-a` | Availability zone (default: `us`) |
 
 ## Uninstall
@@ -100,8 +103,8 @@ Removes an installation from a specific account.
 ocp directory uninstall <appId> <trackerId> --no-prompt
 ```
 
-| Flag | Description |
-| --- | --- |
+| Flag | Description                       |
+|------|-----------------------------------|
 | `-a` | Availability zone (default: `us`) |
 
 ## Job management
@@ -112,10 +115,10 @@ ocp directory uninstall <appId> <trackerId> --no-prompt
 ocp jobs trigger <appId> <jobName> <trackerId>
 ```
 
-| Flag | Description |
-| --- | --- |
+| Flag           | Description                                                             |
+|----------------|-------------------------------------------------------------------------|
 | `--parameters` | JSON string of parameters to pass to the job (e.g. `'{"mode":"full"}'`) |
-| `-a` | Availability zone (default: `us`) |
+| `-a`           | Availability zone (default: `us`)                                       |
 
 **List job execution history:**
 
@@ -123,14 +126,14 @@ ocp jobs trigger <appId> <jobName> <trackerId>
 ocp jobs list <appId>
 ```
 
-| Flag | Description |
-| --- | --- |
-| `--trackerId` | Filter by tracker ID |
-| `--function` | Filter by job name |
-| `--status` | Filter by status: `PENDING`, `SCHEDULED`, `RUNNING`, `COMPLETE`, `ERROR`, `TERMINATED` |
-| `--limit` | Number of results (default: `50`) |
-| `--from` | Start time — ISO string, epoch, or relative (e.g. `"5m"`, `"7d"`) |
-| `-a` | Availability zone (default: `us`) |
+| Flag          | Description                                                                            |
+|---------------|----------------------------------------------------------------------------------------|
+| `--trackerId` | Filter by tracker ID                                                                   |
+| `--function`  | Filter by job name                                                                     |
+| `--status`    | Filter by status: `PENDING`, `SCHEDULED`, `RUNNING`, `COMPLETE`, `ERROR`, `TERMINATED` |
+| `--limit`     | Number of results (default: `50`)                                                      |
+| `--from`      | Start time — ISO string, epoch, or relative (e.g. `"5m"`, `"7d"`)                      |
+| `-a`          | Availability zone (default: `us`)                                                      |
 
 **Show runtime status of a running job:**
 
@@ -138,8 +141,8 @@ ocp jobs list <appId>
 ocp jobs runtimeStatus <jobId>
 ```
 
-| Flag | Description |
-| --- | --- |
+| Flag | Description                       |
+|------|-----------------------------------|
 | `-a` | Availability zone (default: `us`) |
 
 **Terminate a running job:**
@@ -148,6 +151,6 @@ ocp jobs runtimeStatus <jobId>
 ocp jobs terminate <jobId>
 ```
 
-| Flag | Description |
-| --- | --- |
+| Flag | Description                       |
+|------|-----------------------------------|
 | `-a` | Availability zone (default: `us`) |

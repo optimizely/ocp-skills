@@ -1,6 +1,6 @@
 # CLI — Scaffolding
 
-Use the OCP CLI to register, initialize, and add components. Never hand-edit `app.yml` to add a function, job, source, or destination — always use the scaffolding commands so both the TypeScript file and the `app.yml` entry are created together.
+Always use the OCP CLI to register, initialize, and add new components — never write scaffolding code manually or hand-edit `app.yml` to add a function, job, source, or destination. The CLI creates both the TypeScript file and the `app.yml` entry together; doing it by hand risks them going out of sync. Updating existing component code can be done manually.
 
 - [Register](#register)
 - [Init](#init)
@@ -17,12 +17,12 @@ One-time step. Reserve the app ID before writing any code. **Before running this
 ocp app register --appId <value> --name <value> --product <value> --no-personal
 ```
 
-| Flag | Required | Description |
-| --- | --- | --- |
-| `--appId` | Yes | App ID to reserve (e.g. `my_app`) |
-| `--name` | Yes | Display name of the app |
-| `--product` | Yes | Target product: `HUB` (OCP) or `ODP` |
-| `--personal` / `--no-personal` | Yes | Pass `--no-personal` to share with your org, `--personal` to keep it private |
+| Flag                           | Required | Description                                                                                                        |
+|--------------------------------|----------|--------------------------------------------------------------------------------------------------------------------|
+| `--appId`                      | Yes      | App ID to reserve (e.g. `my_app`)                                                                                  |
+| `--name`                       | Yes      | Display name of the app                                                                                            |
+| `--product`                    | Yes      | Target product: `HUB` (OCP) or `ODP`                                                                               |
+| `--personal` / `--no-personal` | Yes      | Pass `--no-personal` to share with your org, `--personal` to keep it private — always ask the user which they want |
 
 All four flags must be provided — the command goes interactive if any are omitted.
 
@@ -46,28 +46,28 @@ ocp app init --app-id <value> --display-name <value> --template <value> \
 Interactive by default — prompts for project details and creates the project directory if needed.
 To run non-interactively, pass `--no-prompt` plus every flag marked Required below; skipping a Required flag either hangs at a prompt or produces an `app.yml` that won't pass validation.
 
-| Flag | Required | Description |
-| --- | --- | --- |
-| `--app-id` | Yes | App ID (e.g. `my_app`) |
-| `--display-name` | Yes | Display name (e.g. `My App`) |
-| `--template` | Yes | Template display name — must be one of the exact strings below |
-| `--version` | Yes | Version (e.g. `1.0.0-dev.1`) |
-| `--summary` | Yes | Brief app summary |
-| `--support-url` | Yes | Support URL |
-| `--contact-email` | Yes | Contact email address |
-| `--category` | Yes | App category — see `app-yml.md` for valid values |
-| `--package-manager` | No | Package manager: `yarn`, `yarn-berry`, `npm`, `pnpm`, `bun` |
-| `--directory` | Yes | Target directory for the project |
+| Flag                | Required | Description                                                                                                                         |
+|---------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `--app-id`          | Yes      | App ID (e.g. `my_app`)                                                                                                              |
+| `--display-name`    | Yes      | Display name (e.g. `My App`)                                                                                                        |
+| `--template`        | Yes      | Template display name — must be one of the exact strings below                                                                      |
+| `--version`         | Yes      | Version (e.g. `1.0.0-dev.1`)                                                                                                        |
+| `--summary`         | Yes      | Brief app summary                                                                                                                   |
+| `--support-url`     | Yes      | Support URL                                                                                                                         |
+| `--contact-email`   | Yes      | Contact email address                                                                                                               |
+| `--category`        | Yes      | App category — see `app-yml.md` for valid values; always ask the user which to use before running the command                       |
+| `--package-manager` | No       | Package manager: `yarn` (default), `yarn-berry`, `npm`, `pnpm`, `bun` — always ask the user which to use before running the command |
+| `--directory`       | Yes      | Target directory for the project                                                                                                    |
 
 Pass the full template display name exactly as listed:
 
-| Template name | Use for |
-| --- | --- |
-| `"Basic OCP Sample"` | OCP app with example functions and jobs|
-| `"Empty OCP Project"` | OCP app with no example code |
-| `"Basic ODP Sample"` | ODP app with example functions and jobs |
-| `"Empty ODP Project"` | ODP app with no example code |
-| `"Opal tool OCP app"` | OCP app that implements Opal tools |
+| Template name         | Use for                                 |
+|-----------------------|-----------------------------------------|
+| `"Basic OCP Sample"`  | OCP app with example functions and jobs |
+| `"Empty OCP Project"` | OCP app with no example code            |
+| `"Basic ODP Sample"`  | ODP app with example functions and jobs |
+| `"Empty ODP Project"` | ODP app with no example code            |
+| `"Opal tool OCP app"` | OCP app that implements Opal tools      |
 
 ## Add function
 
@@ -75,11 +75,11 @@ Pass the full template display name exactly as listed:
 ocp add function
 ```
 
-| Flag | Description |
-| --- | --- |
-| `--name` | Function name in `snake_case` |
-| `--description` | Function description |
-| `--global` | Create a global function instead of a regular function |
+| Flag            | Description                                            |
+|-----------------|--------------------------------------------------------|
+| `--name`        | Function name in `snake_case`                          |
+| `--description` | Function description                                   |
+| `--global`      | Create a global function instead of a regular function |
 
 Creates `src/functions/<ClassName>.ts` and adds the entry to `app.yml`.
 
@@ -89,11 +89,11 @@ Creates `src/functions/<ClassName>.ts` and adds the entry to `app.yml`.
 ocp add job
 ```
 
-| Flag | Description |
-| --- | --- |
-| `--name` | Job name in `snake_case` |
-| `--description` | Job description |
-| `--cron` | Optional cron schedule (e.g. `"0 0 0 ? * *"`) |
+| Flag            | Description                                   |
+|-----------------|-----------------------------------------------|
+| `--name`        | Job name in `snake_case`                      |
+| `--description` | Job description                               |
+| `--cron`        | Optional cron schedule (e.g. `"0 0 0 ? * *"`) |
 
 Creates `src/jobs/<ClassName>.ts` and adds the entry to `app.yml`.
 
@@ -103,12 +103,12 @@ Creates `src/jobs/<ClassName>.ts` and adds the entry to `app.yml`.
 ocp add source
 ```
 
-| Flag | Description |
-| --- | --- |
-| `--name` | Source name in `snake_case` |
-| `--description` | Source description |
-| `--schema` | Schema type: `static` (YAML file) or `dynamic` (TypeScript class) |
-| `--schema-name` | Schema file or class name (defaults to source name) |
+| Flag            | Description                                                       |
+|-----------------|-------------------------------------------------------------------|
+| `--name`        | Source name in `snake_case`                                       |
+| `--description` | Source description                                                |
+| `--schema`      | Schema type: `static` (YAML file) or `dynamic` (TypeScript class) |
+| `--schema-name` | Schema file or class name (defaults to source name)               |
 
 Creates `src/sources/schema/<schemaName>.yml` (static) or `src/sources/<SchemaClass>.ts` (dynamic) and adds the entry to `app.yml`. `<schemaName>` defaults to the source name when `--schema-name` is omitted.
 
@@ -118,11 +118,11 @@ Creates `src/sources/schema/<schemaName>.yml` (static) or `src/sources/<SchemaCl
 ocp add destination
 ```
 
-| Flag | Description |
-| --- | --- |
-| `--name` | Destination name in `snake_case` |
-| `--description` | Destination description |
-| `--schema` | Schema type: `static` (YAML file) or `dynamic` (TypeScript class) |
-| `--schema-name` | Schema file or class name (defaults to destination name) |
+| Flag            | Description                                                       |
+|-----------------|-------------------------------------------------------------------|
+| `--name`        | Destination name in `snake_case`                                  |
+| `--description` | Destination description                                           |
+| `--schema`      | Schema type: `static` (YAML file) or `dynamic` (TypeScript class) |
+| `--schema-name` | Schema file or class name (defaults to destination name)          |
 
 Creates `src/destinations/<ClassName>.ts` and `src/destinations/schema/<schemaName>.yml` (static) or `src/destinations/<SchemaClass>.ts` (dynamic), and adds the entry to `app.yml`. `<schemaName>` defaults to the destination name when `--schema-name` is omitted.

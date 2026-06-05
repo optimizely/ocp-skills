@@ -43,19 +43,24 @@ Writes happen in lifecycle methods — `onSettingsForm` (persisting form submiss
 | `exists` | `exists(section)` | `Promise<boolean>` |
 
 ```typescript
-import { storage } from '@zaiusinc/app-sdk';
+import { storage, ValueHash } from '@zaiusinc/app-sdk';
+
+interface Credentials extends ValueHash {
+  api_key: string;
+  authorized?: boolean;
+}
 
 // Read a full section
-const creds = await storage.settings.get<{ api_key: string }>('credentials');
+const creds = await storage.settings.get<Credentials>('credentials');
 
 // Read specific fields only
-const { api_key } = await storage.settings.get<{ api_key: string }>('credentials', ['api_key']);
+const { api_key } = await storage.settings.get<Credentials>('credentials', ['api_key']);
 
 // Write a full section (overwrites)
 await storage.settings.put('credentials', { api_key: 'abc123' });
 
 // Partial update (leaves other fields untouched)
-await storage.settings.patch('auth', { authorized: true });
+await storage.settings.patch('credentials', { authorized: true });
 ```
 
 ---
@@ -75,11 +80,18 @@ Per-installation encrypted store (Vault-backed). Values are stored in Vault and 
 | `exists` | `exists(key)` | `Promise<boolean>` |
 
 ```typescript
+import { storage, ValueHash } from '@zaiusinc/app-sdk';
+
+interface Token extends ValueHash {
+  access_token: string;
+  refresh_token: string;
+}
+
 // Write a token after OAuth grant
 await storage.secrets.put('token', { access_token: token, refresh_token: refresh });
 
 // Read it back
-const { access_token } = await storage.secrets.get<{ access_token: string }>('token');
+const { access_token } = await storage.secrets.get<Token>('token');
 
 // Partial update (atomic)
 await storage.secrets.patch('token', { access_token: newToken });
@@ -105,6 +117,13 @@ Per-installation store for non-sensitive state. Each key always stores an object
 | `incrementMulti` | `incrementMulti(key, { field: amount }, options?)` | `Promise<{ field: number }>` — values after increment |
 
 ```typescript
+import { KVHash, storage } from '@zaiusinc/app-sdk';
+
+interface SyncState extends KVHash {
+  cursor: string;
+  page: number;
+}
+
 // Write (overwrites entire object)
 await storage.kvStore.put('sync_state', { cursor: 'abc123', page: 3 });
 
@@ -112,10 +131,10 @@ await storage.kvStore.put('sync_state', { cursor: 'abc123', page: 3 });
 await storage.kvStore.put('sync_state', { cursor: 'abc123', page: 3 }, { ttl: 3600 });
 
 // Read
-const state = await storage.kvStore.get<{ cursor: string; page: number }>('sync_state');
+const state = await storage.kvStore.get<SyncState>('sync_state');
 
 // Read specific fields only
-const { cursor } = await storage.kvStore.get<{ cursor: string }>('sync_state', ['cursor']);
+const { cursor } = await storage.kvStore.get<SyncState>('sync_state', ['cursor']);
 
 // Check existence
 if (await storage.kvStore.exists('sync_state')) { ... }
@@ -145,6 +164,8 @@ const count = await storage.kvStore.increment('stats', 'events_processed', 1);
 // Increment multiple fields in one call
 const counts = await storage.kvStore.incrementMulti('stats', { events_processed: 1, bytes_received: 512 });
 ```
+
+Always use `KVHash` (not `ValueHash`) for types stored in `kvStore` and `sharedKvStore` — `KVHash` adds `StringSet` and `NumberSet` support needed for atomic set operations. Always use `ValueHash` for `settings` and `secrets`.
 
 ### Advanced operations
 
@@ -245,10 +266,14 @@ await storage.sharedKvStore.put(trackerId, { installId });
 ```
 
 ```typescript
-import { functions, storage } from '@zaiusinc/app-sdk';
+import { functions, KVHash, storage } from '@zaiusinc/app-sdk';
+
+interface InstallEntry extends KVHash {
+  installId: number;
+}
 
 // In GlobalFunction — look up and route
-const { installId } = await storage.sharedKvStore.get<{ installId: number }>(trackerId);
+const { installId } = await storage.sharedKvStore.get<InstallEntry>(trackerId);
 const endpoints = await functions.getEndpoints(installId);
 ```
 
