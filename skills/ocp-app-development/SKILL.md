@@ -49,14 +49,16 @@ my-app/
     ├── jobs/         # Background and scheduled tasks
     ├── lifecycle/    # Install, uninstall, OAuth, settings form handlers
     ├── sources/      # Data sync source logic and schema definitions
-    └── destinations/ # Data sync destination logic and schema definitions
+    ├── destinations/ # Data sync destination logic and schema definitions
+    ├── lib/          # Shared utilities, API clients, TypeScript interfaces
+    └── tests/        # Unit and integration tests
 ```
 
 | SDK | Purpose |
 | --- | --- |
 | `@zaiusinc/app-sdk` | Core framework — functions, jobs, lifecycle, destinations, storage, notifications |
 | `@zaiusinc/node-sdk` | ODP data access — events, customers, objects, GraphQL |
-| `@optimizely-opal/opal-tool-ocp-sdk` | Opal AI tools — `@tool` and `@interaction` decorators |
+| `@optimizely-opal/opal-tool-ocp-sdk` | Opal AI tools — `ToolFunction`, `GlobalToolFunction`, `@tool`, `@interaction`, `@resource` decorators |
 
 Every component runs in the context of one OCP account and one installation, identified by:
 
@@ -107,9 +109,11 @@ When a request comes in against an existing app rather than a new one:
 | `onUpgrade` — version migration logic | [references/lifecycle/upgrade.md](references/lifecycle/upgrade.md) |
 | Data sync source — static or dynamic schema, `sources.emit()` | [references/data-sync/source.md](references/data-sync/source.md) |
 | Data sync destination — `ready()`, `deliver()`, static or dynamic schema | [references/data-sync/destination.md](references/data-sync/destination.md) |
-| Opal tool function — `ToolFunction`, `GlobalToolFunction` | [references/opal-tools/tool-functions.md](references/opal-tools/tool-functions.md) |
-| Opal `@tool` decorator — `ParameterType`, parameters, OptiID auth | [references/opal-tools/tools.md](references/opal-tools/tools.md) |
-| Opal `@interaction` decorator — island UI components and interaction handlers | [references/opal-tools/islands-interactions.md](references/opal-tools/islands-interactions.md) |
+| Opal tool — overview, project structure, how pieces connect | [references/opal-tools/overview.md](references/opal-tools/overview.md) |
+| Opal tool function — `ToolFunction`, `GlobalToolFunction` | [references/opal-tools/tool-function.md](references/opal-tools/tool-function.md) |
+| Opal `@tool` decorator — `ParameterType`, parameters, OptiID auth | [references/opal-tools/tool.md](references/opal-tools/tool.md) |
+| Opal `@interaction` decorator — Proteus card button handlers, `InteractionResult` from `@tool` for soft messages | [references/opal-tools/interaction.md](references/opal-tools/interaction.md) |
+| Opal `@resource` decorator — Proteus UI rich result cards, components, data binding | [references/opal-tools/resource.md](references/opal-tools/resource.md) |
 | Storage — `settings`, `secrets`, `kvStore`, `sharedKvStore` | [references/app-sdk/storage.md](references/app-sdk/storage.md) |
 | Notifications — `notifications.info/success/warn/error` | [references/app-sdk/notifications.md](references/app-sdk/notifications.md) |
 | Logger — `logger.debug/info/warn/error` | [references/app-sdk/logging.md](references/app-sdk/logging.md) |
