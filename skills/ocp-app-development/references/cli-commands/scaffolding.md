@@ -41,23 +41,21 @@ ocp app init --app-id <value> --display-name <value> --template <value> \
   --package-manager <value> --directory <value> --no-prompt
 ```
 
-**The target directory must contain no files or folders — including hidden ones. `ocp app init` will fail if anything exists inside it.**
-
 Interactive by default — prompts for project details and creates the project directory if needed.
 To run non-interactively, pass `--no-prompt` plus every flag marked Required below; skipping a Required flag either hangs at a prompt or produces an `app.yml` that won't pass validation.
 
-| Flag                | Required | Description                                                                                                                         |
-|---------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------|
-| `--app-id`          | Yes      | App ID (e.g. `my_app`)                                                                                                              |
-| `--display-name`    | Yes      | Display name (e.g. `My App`)                                                                                                        |
-| `--template`        | Yes      | Template display name — must be one of the exact strings below                                                                      |
-| `--version`         | Yes      | Version (e.g. `1.0.0-dev.1`)                                                                                                        |
-| `--summary`         | Yes      | Brief app summary                                                                                                                   |
-| `--support-url`     | Yes      | Support URL                                                                                                                         |
-| `--contact-email`   | Yes      | Contact email address                                                                                                               |
-| `--category`        | Yes      | App category — see `app-yml.md` for valid values; always ask the user which to use before running the command                       |
-| `--package-manager` | No       | Package manager: `yarn` (default), `yarn-berry`, `npm`, `pnpm`, `bun` — always ask the user which to use before running the command |
-| `--directory`       | Yes      | Target directory for the project                                                                                                    |
+| Flag                | Required | Description                                                                                                                                                                                                                                                                                                                   |
+|---------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `--app-id`          | Yes      | App ID (e.g. `my_app`)                                                                                                                                                                                                                                                                                                        |
+| `--display-name`    | Yes      | Display name (e.g. `My App`)                                                                                                                                                                                                                                                                                                  |
+| `--template`        | Yes      | Template display name — must be one of the exact strings below                                                                                                                                                                                                                                                                |
+| `--version`         | Yes      | Version (e.g. `1.0.0-dev.1`)                                                                                                                                                                                                                                                                                                  |
+| `--summary`         | Yes      | Brief app summary                                                                                                                                                                                                                                                                                                             |
+| `--support-url`     | Yes      | Support URL                                                                                                                                                                                                                                                                                                                   |
+| `--contact-email`   | Yes      | Contact email address                                                                                                                                                                                                                                                                                                         |
+| `--category`        | Yes      | App category — see `app-yml.md` for valid values; always ask the user which to use before running the command                                                                                                                                                                                                                 |
+| `--package-manager` | No       | Package manager: `yarn` (default), `yarn-berry`, `npm`, `pnpm`, `bun` — always ask the user which to use before running the command                                                                                                                                                                                           |
+| `--directory`       | No       | Target directory. If the path doesn't exist, the CLI creates it; if it exists but isn't empty (including hidden files) — the command fails. This applies whether you pass `--directory` or rely on the `--no-prompt` default, which derives the directory from the app-id (underscores → dashes, e.g. `my_app` → `./my-app`). |
 
 Pass the full template display name exactly as listed:
 
@@ -72,57 +70,57 @@ Pass the full template display name exactly as listed:
 ## Add function
 
 ```bash
-ocp add function
+ocp add function --name <value> --description <value>
 ```
 
-| Flag            | Description                                            |
-|-----------------|--------------------------------------------------------|
-| `--name`        | Function name in `snake_case`                          |
-| `--description` | Function description                                   |
-| `--global`      | Create a global function instead of a regular function |
+| Flag            | Required | Description                                            |
+|-----------------|----------|--------------------------------------------------------|
+| `--name`        | Yes      | Function name in `snake_case`                          |
+| `--description` | Yes      | Function description                                   |
+| `--global`      | No       | Create a global function instead of a regular function |
 
 Creates `src/functions/<ClassName>.ts` and adds the entry to `app.yml`.
 
 ## Add job
 
 ```bash
-ocp add job
+ocp add job --name <value> --description <value>
 ```
 
-| Flag            | Description                                   |
-|-----------------|-----------------------------------------------|
-| `--name`        | Job name in `snake_case`                      |
-| `--description` | Job description                               |
-| `--cron`        | Optional cron schedule (e.g. `"0 0 0 ? * *"`) |
+| Flag            | Required | Description                                   |
+|-----------------|----------|-----------------------------------------------|
+| `--name`        | Yes      | Job name in `snake_case`                      |
+| `--description` | Yes      | Job description                               |
+| `--cron`        | No       | Optional cron schedule (e.g. `"0 0 0 ? * *"`) |
 
 Creates `src/jobs/<ClassName>.ts` and adds the entry to `app.yml`.
 
 ## Add source
 
 ```bash
-ocp add source
+ocp add source --name <value> --description <value> --schema <static|dynamic> --schema-name <value>
 ```
 
-| Flag            | Description                                                       |
-|-----------------|-------------------------------------------------------------------|
-| `--name`        | Source name in `snake_case`                                       |
-| `--description` | Source description                                                |
-| `--schema`      | Schema type: `static` (YAML file) or `dynamic` (TypeScript class) |
-| `--schema-name` | Schema file or class name (defaults to source name)               |
+| Flag            | Required | Description                                                       |
+|-----------------|----------|-------------------------------------------------------------------|
+| `--name`        | Yes      | Source name in `snake_case`                                       |
+| `--description` | Yes      | Source description                                                |
+| `--schema`      | Yes      | Schema type: `static` (YAML file) or `dynamic` (TypeScript class) |
+| `--schema-name` | Yes      | Schema file name in `snake_case` (static) or class name in `PascalCase` (dynamic) |
 
-Creates `src/sources/schema/<schemaName>.yml` (static) or `src/sources/<SchemaClass>.ts` (dynamic) and adds the entry to `app.yml`. `<schemaName>` defaults to the source name when `--schema-name` is omitted.
+Creates `src/sources/schema/<schemaName>.yml` (static) or `src/sources/<SchemaClass>.ts` (dynamic) and adds the entry to `app.yml`. If `--schema-name` is omitted the command prompts for it (pre-filled with a default) — pass it explicitly to stay non-interactive.
 
 ## Add destination
 
 ```bash
-ocp add destination
+ocp add destination --name <value> --description <value> --schema <static|dynamic> --schema-name <value>
 ```
 
-| Flag            | Description                                                       |
-|-----------------|-------------------------------------------------------------------|
-| `--name`        | Destination name in `snake_case`                                  |
-| `--description` | Destination description                                           |
-| `--schema`      | Schema type: `static` (YAML file) or `dynamic` (TypeScript class) |
-| `--schema-name` | Schema file or class name (defaults to destination name)          |
+| Flag            | Required | Description                                                       |
+|-----------------|----------|-------------------------------------------------------------------|
+| `--name`        | Yes      | Destination name in `snake_case`                                  |
+| `--description` | Yes      | Destination description                                           |
+| `--schema`      | Yes      | Schema type: `static` (YAML file) or `dynamic` (TypeScript class) |
+| `--schema-name` | Yes      | Schema file name in `snake_case` (static) or class name in `PascalCase` (dynamic) |
 
-Creates `src/destinations/<ClassName>.ts` and `src/destinations/schema/<schemaName>.yml` (static) or `src/destinations/<SchemaClass>.ts` (dynamic), and adds the entry to `app.yml`. `<schemaName>` defaults to the destination name when `--schema-name` is omitted.
+Creates `src/destinations/<ClassName>.ts` and `src/destinations/schema/<schemaName>.yml` (static) or `src/destinations/<SchemaClass>.ts` (dynamic), and adds the entry to `app.yml`. If `--schema-name` is omitted the command prompts for it (pre-filled with a default) — pass it explicitly to stay non-interactive.
