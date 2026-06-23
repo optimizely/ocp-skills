@@ -4,6 +4,8 @@
 - [App.GlobalFunction](#appglobalfunction)
 - [Request](#request)
 - [Response](#response)
+- [Installation Resolution](#installation-resolution)
+- [Functions API](#functions-api)
 - [Common mistakes](#common-mistakes)
 
 A function in OCP is a webhook listener — it receives inbound requests triggered by external events. Use `App.Function` when the provider supports registering a webhook URL per installation (each account gets its own URL and full execution context). Use `App.GlobalFunction` when the provider only supports a single webhook URL — it executes without an installation context and is typically used to route incoming requests to the correct installation endpoint.
@@ -129,10 +131,109 @@ new App.Response(status, bodyJSON)    // status + JSON body (sets content-type: 
 
 **Critical:** status is the **first** argument, body is the **second**. This is the opposite of the web standard `Response` constructor. Using `new App.Response(body, status)` compiles without error but returns a broken response.
 
+## Installation Resolution
+
+Some external providers only support a single webhook URL across all accounts. `installation_resolution` tells the platform how to extract the account's **public API key** (tracker ID) from the incoming request so the function executes with the correct per-installation context.
+
+Declare it in `app.yml` on the function:
+
+```yaml
+functions:
+  my_webhook:
+    entry_point: MyWebhook
+    description: Handles webhooks from ExternalService
+    installation_resolution:
+      type: JSON_BODY_FIELD
+      key: "$.api_key"
+```
+
+| `type` | `key` | Resolves from |
+| --- | --- | --- |
+| `HEADER` | header name | An HTTP request header — e.g. `x-ocp-api-key: <trackerId>` |
+| `QUERY_PARAM` | parameter name | A URL query parameter — e.g. `?apiKey=<trackerId>` |
+| `JSON_BODY_FIELD` | JSONPath expression | A field in the JSON request body — e.g. `"$.apiKey"` → `{"apiKey": "<trackerId>"}` |
+
+**Constraints:**
+- The value extracted from the request must be the account's **public API key** (tracker ID)
+- Cannot be used on global functions
+- For `JSON_BODY_FIELD`, every request must include `Content-Type: application/json` and the `key` must be a valid JSONPath (RFC 9535) expression
+
+### Example
+
+The external system sends all events to one URL and includes the account's tracker ID in the `X-Api-Key` header. No global function is needed — the platform resolves the correct installation from the header automatically.
+
+**`app.yml`:**
+
+```yaml
+functions:
+  event_handler:
+    entry_point: EventHandler
+    description: Handles events from ExternalService
+    installation_resolution:
+      type: HEADER
+      key: X-Api-Key
+```
+
+**Function runs with the correct installation context:**
+
+```typescript
+// src/functions/EventHandler.ts
+import * as App from '@zaiusinc/app-sdk';
+import { storage } from '@zaiusinc/app-sdk';
+import { odp } from '@zaiusinc/node-sdk';
+
+export class EventHandler extends App.Function {
+  public async perform(): Promise<App.Response> {
+    const payload = this.request.bodyJSON;
+
+    // Platform resolved the installation from X-Api-Key before calling perform() —
+    // storage and ODP calls are scoped to the correct account automatically.
+    const config = await storage.settings.get<{ api_key: string }>('config');
+    await odp.event(payload);
+
+    return new App.Response(200, 'OK');
+  }
+}
+```
+
+## Functions API
+
+`functions` from `@zaiusinc/app-sdk` resolves webhook URLs for any installation of this app. Import and use it inside any function or job.
+
+```typescript
+import { functions } from '@zaiusinc/app-sdk';
+```
+
+| Method                                 | Returns                               | Description                                                                                                                                                                                       |
+|----------------------------------------|---------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `functions.getEndpoints(installId?)`   | `Promise<{ [name: string]: string }>` | Webhook URLs for all functions of an installation. When called from a non-global function, `installId` defaults to the current installation. **From a global function, `installId` is required.** |
+| `functions.getGlobalEndpoints()`       | `Promise<{ [name: string]: string }>` | URLs for all global functions of this app                                                                                                                                                         |
+| `functions.getAuthorizationGrantUrl()` | `string`                              | The OAuth authorization grant redirect URL for the current installation                                                                                                                           |
+
+The returned objects map function name (as declared in `app.yml`) to its full URL with no trailing slash.
+
+**Typical use — registering the webhook URL with an external service during install:**
+
+```typescript
+import { functions } from '@zaiusinc/app-sdk';
+
+// Inside onInstall — get this installation's webhook URL and register it externally
+const endpoints = await functions.getEndpoints();
+const webhookUrl = endpoints['my_webhook'];
+await registerWithExternalService(webhookUrl);
+```
+
+**From a global function — routing to the correct installation:**
+
+```typescript
+const endpoints = await functions.getEndpoints(installId);
+await fetch(endpoints['my_webhook'], { method: 'POST', body: JSON.stringify(payload) });
+```
+
 ## Common mistakes
 
-| Mistake | Fix |
-| --- | --- |
-| `new App.Response(body, status)` | `new App.Response(status, body)` — status is first |
-| `new Response(200, {...})` | Must use `App.Response`, not the web standard `Response` |
-| Missing constructor that calls `super(request)` | Always define the constructor and pass `request` to `super()` |
+| Mistake                                                 | Fix                                                             |
+|---------------------------------------------------------|-----------------------------------------------------------------|
+| `new App.Response(body, status)`                        | `new App.Response(status, body)` — status is first              |
+| `new Response(200, {...})`                              | Must use `App.Response`, not the web standard `Response`        |
+| Defining a constructor without calling `super(request)` | Always pass `request` to `super()` when declaring a constructor |

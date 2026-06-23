@@ -26,6 +26,12 @@ The app defines the complete data flow between two specific, hardcoded systems. 
 
 **Use when:** both systems are predetermined by the developer — for example, pulling records from a CRM and syncing them to a marketing platform.
 
+### ODP app
+
+The app writes data directly into ODP — customer profiles, events, and custom objects — using the node-sdk from functions or jobs. The app defines any custom ODP schema it needs and owns the complete data flow: what is fetched from the external system, how it is transformed, and where it lands in ODP.
+
+**Use when:** the destination is ODP and you need direct control over what is written — for example, capturing leads, enriching customer profiles from a third-party provider, importing records from a CRM, or subscribing customers to lists.
+
 ### Opal tool
 
 The app exposes capabilities of an external service as AI tools in the Opal assistant. No data sync involved — the app receives tool calls from Opal and returns results.
@@ -42,12 +48,12 @@ my-app/
 ├── package.json
 ├── tsconfig.json
 ├── forms/            # Settings form YAML (forms/settings.yml)
-├── schema/           # ODP schema extensions (add custom fields to ODP objects)
 ├── assets/           # Static resources
 └── src/
     ├── functions/    # Webhook listeners, Opal tools
     ├── jobs/         # Background and scheduled tasks
     ├── lifecycle/    # Install, uninstall, OAuth, settings form handlers
+    ├── schema/       # ODP schema extensions (add custom fields to ODP objects)
     ├── sources/      # Data sync source logic and schema definitions
     ├── destinations/ # Data sync destination logic and schema definitions
     ├── lib/          # Shared utilities, API clients, TypeScript interfaces
@@ -58,7 +64,10 @@ my-app/
 | --- | --- |
 | `@zaiusinc/app-sdk` | Core framework — functions, jobs, lifecycle, destinations, storage, notifications |
 | `@zaiusinc/node-sdk` | ODP data access — events, customers, objects, GraphQL |
+| `@zaiusinc/app-forms-schema` | Type definitions for settings form elements and payloads |
 | `@optimizely-opal/opal-tool-ocp-sdk` | Opal AI tools — `ToolFunction`, `GlobalToolFunction`, `@tool`, `@interaction`, `@resource` decorators |
+
+`@zaiusinc/node-sdk`'s ODP client is exported as **`odp`** (use in new code) and also as **`z`**, a backward-compatible alias — identical at runtime. Match the existing import when editing an app.
 
 Every component runs in the context of one OCP account and one installation, identified by:
 
@@ -90,6 +99,7 @@ When a request comes in against an existing app rather than a new one:
 2. **Check installed SDK versions in `package.json`** before assuming an API exists
 3. **Use the scaffolding commands for new components** even in an existing app — never hand-edit `app.yml` to add a function/job/source/destination
 4. **Bump the version in `app.yml`** when shipping a change; use `-dev.N` suffix during development
+5. **Publishing a new version** automatically upgrades existing installations within the same major version; a major version bump (e.g. `1.x → 2.0`) requires a manual upgrade per account via the ocp CLI
 
 ## Components and Reference Files
 
@@ -98,7 +108,6 @@ When a request comes in against an existing app rather than a new one:
 | `app.yml` structure and all configuration options | [references/app-yml.md](references/app-yml.md) |
 | Webhook listener (`App.Function`); global endpoint (`App.GlobalFunction`) | [references/function.md](references/function.md) |
 | Background or scheduled task (`App.Job`) — historical imports, cron scheduling | [references/job.md](references/job.md) |
-| ODP schema extensions — custom fields on ODP objects | [references/odp-schema.md](references/odp-schema.md) |
 | Lifecycle hooks — all hooks and when each one is called | [references/lifecycle/overview.md](references/lifecycle/overview.md) |
 | `onInstall` — initial setup, generating secrets, registering external webhooks | [references/lifecycle/install.md](references/lifecycle/install.md) |
 | `onSettingsForm` — saving settings, button actions, validation | [references/lifecycle/settings-form.md](references/lifecycle/settings-form.md) |
@@ -118,13 +127,12 @@ When a request comes in against an existing app rather than a new one:
 | Notifications — `notifications.info/success/warn/error` | [references/app-sdk/notifications.md](references/app-sdk/notifications.md) |
 | Logger — `logger.debug/info/warn/error` | [references/app-sdk/logging.md](references/app-sdk/logging.md) |
 | CLI — `ocp app logs`, `get-log-level`, `set-log-level` | [references/cli-commands/logging.md](references/cli-commands/logging.md) |
-| ODP events — `z.event()` | [references/node-sdk/events.md](references/node-sdk/events.md) |
-| ODP customers — `z.customer()` | [references/node-sdk/customers.md](references/node-sdk/customers.md) |
-| ODP objects — `z.object()`, custom object operations | [references/node-sdk/objects.md](references/node-sdk/objects.md) |
-| ODP GraphQL — `z.graphql()` queries and mutations | [references/node-sdk/graphql.md](references/node-sdk/graphql.md) |
-| ODP schema inspection — read schema, fields, objects | [references/node-sdk/schema.md](references/node-sdk/schema.md) |
-| ODP identifiers — identity resolution and merging | [references/node-sdk/identifiers.md](references/node-sdk/identifiers.md) |
-| ODP lists — list membership management | [references/node-sdk/lists.md](references/node-sdk/lists.md) |
+| ODP schema — define custom fields and objects; read schema at runtime | [references/odp/schema.md](references/odp/schema.md) |
+| ODP events — `odp.event()` | [references/odp/events.md](references/odp/events.md) |
+| ODP customers — `odp.customer()` | [references/odp/customers.md](references/odp/customers.md) |
+| ODP objects — `odp.object()`, custom object operations | [references/odp/objects.md](references/odp/objects.md) |
+| ODP GraphQL — `odp.graphql()` queries | [references/odp/graphql.md](references/odp/graphql.md) |
+| ODP lists — list membership management | [references/odp/lists.md](references/odp/lists.md) |
 | CLI — register, scaffold, and add components | [references/cli-commands/scaffolding.md](references/cli-commands/scaffolding.md) |
 | CLI — validate the app manifest and TypeScript | [references/cli-commands/validation.md](references/cli-commands/validation.md) |
 | CLI — deploy, publish, install, list functions and installations, and manage jobs | [references/cli-commands/deployment.md](references/cli-commands/deployment.md) |
