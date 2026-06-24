@@ -11,6 +11,7 @@ A skill is a set of reference documents that an AI coding assistant reads on dem
 | Skill | Description |
 | --- | --- |
 | [ocp-app-development](skills/ocp-app-development) | Building, modifying, and debugging OCP apps |
+| [ocp-local-testing](skills/ocp-local-testing) | Running and testing an OCP app locally before deploying |
 | [ocp-node22-runtime-migration](skills/ocp-node22-runtime-migration) | Migrating an OCP app from node18 to node22 runtime (SDK 1.x→2.x), with optional path to SDK 3.x |
 | [ocp-app-sdk-v3-migration](skills/ocp-app-sdk-v3-migration) | Modernizing an OCP app already on node22: app-sdk 2.x→3.x, native fetch, ESLint v9, Jest→vitest |
 
@@ -60,6 +61,8 @@ ocp-skills/
     ├── ocp-app-development/              # Building, modifying, debugging OCP apps
     │   ├── SKILL.md
     │   └── references/                   # On-demand topic files (app.yml, lifecycle, SDKs, CLI, …)
+    ├── ocp-local-testing/                # Running and testing an OCP app locally
+    │   └── SKILL.md
     ├── ocp-node22-runtime-migration/     # node18 → node22 runtime + SDK 1→2 (optional → 3)
     │   └── SKILL.md
     └── ocp-app-sdk-v3-migration/         # app-sdk 2→3 modernization on node22

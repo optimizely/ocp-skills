@@ -74,6 +74,12 @@ Every component runs in the context of one OCP account and one installation, ide
 - **`trackerId`** *(string)* — uniquely identifies an **OCP account** (a customer workspace).
 - **`installId`** *(number)* — uniquely identifies an **installation** of the app. Each account installs the app at most once, giving a 1:1 mapping between `trackerId` and `installId`.
 
+## Prerequisites
+
+- Node.js 22+ and Git
+- Install the OCP CLI: `npm install -g @optimizely/ocp-cli-v2` — provides the `ocp` command. (Note the `-v2`: the older `@optimizely/ocp-cli` is the outdated v1.)
+- Provide your API key before running any ocp command: create `~/.ocp/credentials.json` with `{ "apiKey": "<your-key>" }`.
+
 ## Developer Journey
 
 The OCP CLI drives the entire lifecycle — from registering the app to invoking deployed functions. Not all steps apply to every app type — follow the steps relevant to what you are building. **Always read the relevant reference file from the table below before acting on any step** — reference files contain exact commands, component types, and options.
@@ -86,10 +92,11 @@ The OCP CLI drives the entire lifecycle — from registering the app to invoking
 6. **Lifecycle hooks** — implement install, settings, uninstall, and OAuth lifecycle hooks
 7. **Business logic** — write function and job bodies
 8. **Validate** — validate the app manifest and type-check the TypeScript
-9. **Package and upload** — package and upload the app for publishing
-10. **Publish** — make the version available in the OCP App Directory
-11. **Install** — install the app into an account, creating unique webhook URLs per installation
-12. **Retrieve webhook URLs** — retrieve the webhook URLs for an installation to invoke the functions
+9. **Test locally** — run and test the app locally without deploying (see `ocp-local-testing` skill)
+10. **Package and upload** — package and upload the app for publishing
+11. **Publish** — make the version available in the OCP App Directory
+12. **Install** — install the app into an account, creating unique webhook URLs per installation
+13. **Retrieve webhook URLs** — retrieve the webhook URLs for an installation to invoke the functions
 
 ## Modifying an Existing App
 
