@@ -1,0 +1,15 @@
+{
+  "name": "ocp-skills",
+  "description": "Skills for building, testing, migrating, and deploying Optimizely Connect Platform (OCP) apps.",
+  "owner": {
+    "name": "Optimizely"
+  },
+  "plugins": [
+    {
+      "name": "ocp-skills",
+      "description": "Build, test locally, migrate, and deploy Optimizely Connect Platform (OCP) apps.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "ocp-skills",
+  "version": "0.1.0",
+  "description": "Build, test locally, migrate, and deploy Optimizely Connect Platform (OCP) apps.",
+  "author": {
+    "name": "Optimizely"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "OCP Skills",
+    "shortDescription": "Build and test Optimizely Connect Platform apps",
+    "longDescription": "Skills for building, testing locally, migrating, and deploying Optimizely Connect Platform (OCP) apps. Covers app development, the local dev server, SDK v3 migration, and the node22 runtime migration.",
+    "developerName": "Optimizely",
+    "category": "Developer Tools",
+    "capabilities": ["Instructions"]
+  }
+}

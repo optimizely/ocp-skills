@@ -1,0 +1,31 @@
+name: Sync to optimizely/ocp-skills
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: sync-to-optimizely
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    # Only run on the source repo — never on the synced copy.
+    if: github.repository == 'ZaiusInc/ocp-skills'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # Don't persist GITHUB_TOKEN as a github.com auth header — it would
+          # override the PAT in the push URL and auth as the (ZaiusInc-only)
+          # GITHUB_TOKEN, causing 404 on optimizely/ocp-skills.
+          persist-credentials: false
+
+      - name: Push to optimizely/ocp-skills
+        env:
+          OPTIMIZELY_SYNC_TOKEN: ${{ secrets.OPTIMIZELY_SYNC_TOKEN }}
+        run: |
+          git push "https://x-access-token:${OPTIMIZELY_SYNC_TOKEN}@github.com/optimizely/ocp-skills.git" \
+            HEAD:refs/heads/main

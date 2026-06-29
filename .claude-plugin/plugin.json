@@ -1,0 +1,8 @@
+{
+  "name": "ocp-skills",
+  "version": "0.1.0",
+  "description": "Build, test locally, migrate, and deploy Optimizely Connect Platform (OCP) apps.",
+  "author": {
+    "name": "Optimizely"
+  }
+}

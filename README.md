@@ -17,16 +17,39 @@ A skill is a set of reference documents that an AI coding assistant reads on dem
 
 ## Installation
 
+Claude Code, GitHub Copilot, and Codex install via their plugin marketplace — all skills come bundled. Cursor and OpenCode use a one-time clone.
+
 ### Claude Code
 
-```bash
-git clone https://github.com/ZaiusInc/ocp-skills ~/.claude/ocp-skills && mkdir -p ~/.claude/skills && ln -s ~/.claude/ocp-skills/skills/* ~/.claude/skills/
+```
+/plugin marketplace add optimizely/ocp-skills
+/plugin install ocp-skills@ocp-skills
 ```
 
 ### GitHub Copilot
 
 ```bash
-git clone https://github.com/ZaiusInc/ocp-skills ~/.copilot/ocp-skills && mkdir -p ~/.copilot/skills && ln -s ~/.copilot/ocp-skills/skills/* ~/.copilot/skills/
+copilot plugin marketplace add optimizely/ocp-skills
+copilot plugin install ocp-skills@ocp-skills
+```
+
+### Codex
+
+```bash
+codex plugin marketplace add optimizely/ocp-skills
+codex plugin add ocp-skills@ocp-skills
+```
+
+### Cursor
+
+```bash
+git clone https://github.com/optimizely/ocp-skills ~/.cursor/ocp-skills && mkdir -p ~/.cursor/skills && ln -s ~/.cursor/ocp-skills/skills/* ~/.cursor/skills/
+```
+
+### OpenCode
+
+```bash
+git clone https://github.com/optimizely/ocp-skills ~/.config/opencode/ocp-skills && mkdir -p ~/.config/opencode/skills && ln -s ~/.config/opencode/ocp-skills/skills/* ~/.config/opencode/skills/
 ```
 
 ### Verify
@@ -37,18 +60,26 @@ Start a session inside your project directory and ask:
 I want to build an OCP app. Start with a webhook function that receives events from an external service and tracks them in ODP.
 ```
 
-You should get a grounded answer with a correct `App.Function` class, `app.yml` entry, and `z.event()` call — not a generic guess.
+The assistant should load the `ocp-app-development` skill and give a grounded answer with a correct `App.Function` class, `app.yml` entry, and `odp.event()` call — not a generic guess.
 
 ### Update
 
-**Claude Code:**
+Claude Code and GitHub Copilot update automatically through their plugin marketplace. For Codex, Cursor, and OpenCode, update manually:
+
+**Codex:**
 ```bash
-cd ~/.claude/ocp-skills && git pull
+codex plugin marketplace upgrade ocp-skills
+codex plugin add ocp-skills@ocp-skills
 ```
 
-**GitHub Copilot:**
+**Cursor:**
 ```bash
-cd ~/.copilot/ocp-skills && git pull
+cd ~/.cursor/ocp-skills && git pull
+```
+
+**OpenCode:**
+```bash
+cd ~/.config/opencode/ocp-skills && git pull
 ```
 
 ## Project Structure
