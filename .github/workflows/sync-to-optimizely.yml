@@ -19,13 +19,22 @@ jobs:
         with:
           fetch-depth: 0
           # Don't persist GITHUB_TOKEN as a github.com auth header — it would
-          # override the PAT in the push URL and auth as the (ZaiusInc-only)
+          # override the app token in the push URL and auth as the (ZaiusInc-only)
           # GITHUB_TOKEN, causing 404 on optimizely/ocp-skills.
           persist-credentials: false
 
+      - name: Mint installation token for optimizely/ocp-skills
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.SYNC_APP_ID }}
+          private-key: ${{ secrets.SYNC_APP_PRIVATE_KEY }}
+          owner: optimizely
+          repositories: ocp-skills
+
       - name: Push to optimizely/ocp-skills
         env:
-          OPTIMIZELY_SYNC_TOKEN: ${{ secrets.OPTIMIZELY_SYNC_TOKEN }}
+          SYNC_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          git push "https://x-access-token:${OPTIMIZELY_SYNC_TOKEN}@github.com/optimizely/ocp-skills.git" \
+          git push "https://x-access-token:${SYNC_TOKEN}@github.com/optimizely/ocp-skills.git" \
             HEAD:refs/heads/main
