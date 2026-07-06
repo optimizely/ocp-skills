@@ -103,3 +103,11 @@ ocp-skills/
 ## Contributing
 
 Skill documents must stay accurate and under 500 lines per file. When OCP APIs change, update the relevant reference file and open a PR.
+
+## Legal notes
+
+**License**: Copyright © 2026 Optimizely, Inc. Licensed under the Apache License, Version 2.0 (the "License"); you may not use these files except in compliance with the License. A copy of the License is included in the LICENSE file and is available at http://www.apache.org/licenses/LICENSE-2.0. Unless required by applicable law or agreed to in writing, this material is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND.
+ 
+**Trademarks**: "Optimizely," "Optimizely Connect Platform," "OCP," and "Opal” are trademarks of Optimizely North America Inc. The Apache 2.0 license does not grant permission to use these names, logos, or brand features. Other names referenced here (including Claude Code, GitHub Copilot, Codex, Cursor, and OpenCode) are the trademarks of their respective owners and are used for identification only; their mention does not imply any endorsement or affiliation.
+ 
+**Support**: This repository is provided as a community resource to assist external developers. It is not part of any Optimizely product or paid subscription, and is not covered by any service-level agreement, support commitment, or warranty.
