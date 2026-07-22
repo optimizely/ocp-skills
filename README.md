@@ -91,7 +91,7 @@ ocp-skills/
 └── skills/
     ├── ocp-app-development/              # Building, modifying, debugging OCP apps
     │   ├── SKILL.md
-    │   └── references/                   # On-demand topic files (app.yml, lifecycle, SDKs, CLI, …)
+    │   └── references/                   # On-demand topic files (app.yml, lifecycle, SDKs, CLI, cms-ui-extensions, …)
     ├── ocp-local-testing/                # Running and testing an OCP app locally
     │   └── SKILL.md
     ├── ocp-node22-runtime-migration/     # node18 → node22 runtime + SDK 1→2 (optional → 3)

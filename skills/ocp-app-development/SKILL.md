@@ -1,7 +1,7 @@
 ---
 name: ocp-app-development
 version: 0.1.0
-description: ALWAYS use this skill directly when building, modifying, or debugging an OCP (Optimizely Connect Platform) app — adding functions, jobs, data sync sources or destinations, lifecycle hooks, OAuth flows, settings forms, Opal tools, ODP schema extensions, or anything that touches app.yml, the @zaiusinc/app-sdk, @zaiusinc/node-sdk, or @optimizely-opal/opal-tool-ocp-sdk. This skill is self-contained and handles all phases including design decisions.
+description: ALWAYS use this skill directly when building, modifying, or debugging an OCP (Optimizely Connect Platform) app — adding functions, jobs, data sync sources or destinations, lifecycle hooks, OAuth flows, settings forms, Opal tools, CMS UI Extensions, ODP schema extensions, or anything that touches app.yml, the @zaiusinc/app-sdk, @zaiusinc/node-sdk, @optimizely-opal/opal-tool-ocp-sdk, @optimizely/cms-extensibility-sdk, or @optimizely/ocp-cms-ui-extensions-sdk. This skill is self-contained and handles all phases including design decisions.
 ---
 
 # OCP App Development
@@ -38,26 +38,33 @@ The app exposes capabilities of an external service as AI tools in the Opal assi
 
 **Use when:** you want Opal users to query or act on an external service through natural language — for example, running reports, searching records, or triggering actions.
 
-**Decide the app type before writing any code** — it shapes the entire implementation. Ask: who decides which two systems are connected? Developer fixes both → end-to-end. Customer chooses at sync time → data sync. No sync, only AI tool calls → Opal tool.
+### CMS UI Extension app
+
+The app renders custom UI **inside Optimizely CMS (SaaS)** at a designated surface (an *injection point* such as a sidebar panel or a full-page view). See [references/cms-ui-extensions/overview.md](references/cms-ui-extensions/overview.md).
+
+**Use when:** you want to surface app functionality directly in the CMS authoring experience — for example, a media browser, a preview/status panel, or a full-page dashboard for CMS users.
+
+**Decide the app type before writing any code** — it shapes the entire implementation. Ask: who decides which two systems are connected? Developer fixes both → end-to-end. Customer chooses at sync time → data sync. Writing straight to ODP → ODP app. No sync, only AI tool calls → Opal tool. Rendering UI inside Optimizely CMS → CMS UI Extension.
 
 ## App Building Blocks
 
 ```
 my-app/
-├── app.yml           # Manifest — declares all components, metadata, runtime
+├── app.yml                # Manifest — declares all components, metadata, runtime
 ├── package.json
 ├── tsconfig.json
-├── forms/            # Settings form YAML (forms/settings.yml)
-├── assets/           # Static resources
+├── forms/                 # Settings form YAML (forms/settings.yml)
+├── assets/                # Static resources
 └── src/
-    ├── functions/    # Webhook listeners, Opal tools
-    ├── jobs/         # Background and scheduled tasks
-    ├── lifecycle/    # Install, uninstall, OAuth, settings form handlers
-    ├── schema/       # ODP schema extensions (add custom fields to ODP objects)
-    ├── sources/      # Data sync source logic and schema definitions
-    ├── destinations/ # Data sync destination logic and schema definitions
-    ├── lib/          # Shared utilities, API clients, TypeScript interfaces
-    └── tests/        # Unit and integration tests
+    ├── functions/         # Webhook listeners, Opal tools
+    ├── jobs/              # Background and scheduled tasks
+    ├── lifecycle/         # Install, uninstall, OAuth, settings form handlers
+    ├── schema/            # ODP schema extensions (add custom fields to ODP objects)
+    ├── sources/           # Data sync source logic and schema definitions
+    ├── destinations/      # Data sync destination logic and schema definitions
+    ├── cms-ui-extensions/ # CMS UI Extension entry files
+    ├── lib/               # Shared utilities, API clients, TypeScript interfaces
+    └── tests/             # Unit and integration tests
 ```
 
 | SDK | Purpose |
@@ -66,6 +73,8 @@ my-app/
 | `@zaiusinc/node-sdk` | ODP data access — events, customers, objects, GraphQL |
 | `@zaiusinc/app-forms-schema` | Type definitions for settings form elements and payloads |
 | `@optimizely-opal/opal-tool-ocp-sdk` | Opal AI tools — `ToolFunction`, `GlobalToolFunction`, `@tool`, `@interaction`, `@resource` decorators |
+| `@optimizely/cms-extensibility-sdk` | CMS UI Extensions runtime (browser) — `register`, `ExtensionContext`; see [references/cms-ui-extensions/overview.md](references/cms-ui-extensions/overview.md) |
+| `@optimizely/ocp-cms-ui-extensions-sdk` | CMS UI Extensions build tooling — `app.yml` schema/validation, entry-file convention |
 
 `@zaiusinc/node-sdk`'s ODP client is exported as **`odp`** (use in new code) and also as **`z`**, a backward-compatible alias — identical at runtime. Match the existing import when editing an app.
 
@@ -130,6 +139,13 @@ When a request comes in against an existing app rather than a new one:
 | Opal `@tool` decorator — `ParameterType`, parameters, OptiID auth | [references/opal-tools/tool.md](references/opal-tools/tool.md) |
 | Opal `@interaction` decorator — Proteus card button handlers, `InteractionResult` from `@tool` for soft messages | [references/opal-tools/interaction.md](references/opal-tools/interaction.md) |
 | Opal `@resource` decorator — Proteus UI rich result cards, components, data binding | [references/opal-tools/resource.md](references/opal-tools/resource.md) |
+| CMS UI Extensions — overview, model, two SDKs, workflow (custom UI inside Optimizely CMS) | [references/cms-ui-extensions/overview.md](references/cms-ui-extensions/overview.md) |
+| CMS UI Extensions injection points — `sidebar`, `view`, multiplicity, `UI_EXTENSION_INJECTION_POINTS` | [references/cms-ui-extensions/injection-points.md](references/cms-ui-extensions/injection-points.md) |
+| CMS UI Extensions app structure — entry-file naming (`*.sidebar.tsx`/`*.view.tsx`), Vite, build output | [references/cms-ui-extensions/app-structure.md](references/cms-ui-extensions/app-structure.md) |
+| CMS UI Extensions `app.yml` — the `ui_extensions` block shape and fields | [references/cms-ui-extensions/app-yml.md](references/cms-ui-extensions/app-yml.md) |
+| CMS UI Extensions frontend SDK — `register`, `ExtensionContext`, `invokeFunction`, `setReady` | [references/cms-ui-extensions/frontend-sdk.md](references/cms-ui-extensions/frontend-sdk.md) |
+| CMS UI Extensions backend proxy — `App.Function` with `accepts: cms_ui_extension` | [references/cms-ui-extensions/backend-proxy.md](references/cms-ui-extensions/backend-proxy.md) |
+| CMS UI Extensions validation — uniqueness rules, common errors | [references/cms-ui-extensions/validation.md](references/cms-ui-extensions/validation.md) |
 | Storage — `settings`, `secrets`, `kvStore`, `sharedKvStore` | [references/app-sdk/storage.md](references/app-sdk/storage.md) |
 | Notifications — `notifications.info/success/warn/error` | [references/app-sdk/notifications.md](references/app-sdk/notifications.md) |
 | Logger — `logger.debug/info/warn/error` | [references/app-sdk/logging.md](references/app-sdk/logging.md) |
