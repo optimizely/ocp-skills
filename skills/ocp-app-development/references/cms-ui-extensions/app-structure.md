@@ -47,7 +47,7 @@ Because the Vite entry glob is built from `UI_EXTENSION_INJECTION_POINTS`, a cor
 runtime: node22-cms-ext
 ```
 
-This is the node22 runtime variant that adds CMS-extension build handling (the app's `yarn build` emits per-extension bundles; the builder extracts, hashes, and uploads them to the CDN at publish).
+This is the node22 runtime variant that adds CMS-extension build handling (the app's `build` script — run through whichever package manager the app declares — emits per-extension bundles; the builder extracts, hashes, and uploads them to the CDN at publish).
 
 ## Build output
 
@@ -74,10 +74,14 @@ Both SDKs appear in `dependencies`:
 }
 ```
 
-The build script typically builds backend then UI, e.g.:
+### The build script
+
+A CMS-UI-extension app builds the backend and the UI bundles. The `vite build` calls below are package-manager-agnostic, so a two-step build is the same across managers:
 
 ```json
-"build": "yarn clean && vite build --config vite.backend.config.mjs && vite build --config vite.ui.config.mjs"
+"build": "rimraf dist && vite build --config vite.backend.config.mjs && vite build --config vite.ui.config.mjs"
 ```
+
+Make sure that the scripts are aligned in the package.json — see [../package-manager.md](../package-manager.md).
 
 The **resolved** version of `@optimizely/cms-extensibility-sdk` (from the app's lockfile / installed `node_modules`) is what the platform records as the extension's `sdk_version` in the Discovery API.

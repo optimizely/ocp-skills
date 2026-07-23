@@ -39,9 +39,10 @@ Both are declared in the app's `package.json`. The runtime SDK version an app bu
 2. **Declare the extension** in `app.yml` under `ui_extensions.<injectionPoint>` with `name`, `entry_point`, `display_name` — see [app-yml.md](app-yml.md).
 3. **Author the entry file** `src/cms-ui-extensions/.../<EntryPoint>.<injectionPoint>.tsx` calling `register(context => <YourComponent context={context} />)` — see [frontend-sdk.md](frontend-sdk.md).
 4. **Add a backend function** (if the extension needs data/secrets) that `accepts: cms_ui_extension`, called via `context.extension.invokeFunction(...)` — see [backend-proxy.md](backend-proxy.md).
-5. **Validate** — `ocp app validate` runs the SDK validators over the `ui_extensions` block and entry files — see [validation.md](validation.md).
-6. **Test locally** — use the `ocp-local-testing` skill / `ocp dev` to render the extension in a browser before deploying. (The local tool may lag new injection points; verify its support.)
-7. **Package, publish, install** — the standard OCP CLI lifecycle (see the CLI references in this skill). On publish the bundles upload to the CDN and become discoverable to CMS.
+5. **Set the package manager and align the scripts** — if the user chose a package manager other than the template's default, set `"packageManager"` in `package.json` accordingly and align the `build`/`lint`/`test` scripts with it (a general OCP-app rule — see [../package-manager.md](../package-manager.md)).
+6. **Validate** — `ocp app validate` runs the SDK validators over the `ui_extensions` block and entry files — see [validation.md](validation.md).
+7. **Test locally** — use the `ocp-local-testing` skill / `ocp dev` to render the extension in a browser before deploying. (The local tool may lag new injection points; verify its support.)
+8. **Package, publish, install** — the standard OCP CLI lifecycle (see the CLI references in this skill). On publish the bundles upload to the CDN and become discoverable to CMS.
 
 ## Modifying an existing CMS-UI-extension app
 
@@ -49,7 +50,8 @@ Both are declared in the app's `package.json`. The runtime SDK version an app bu
 2. **Check both SDK versions** in `package.json` — the runtime API and the build tooling version independently.
 3. **Match the entry-file naming convention** exactly — a mismatched injection-point segment or `entry_point` will not be discovered/validated.
 4. **Keep secrets and third-party calls in the backend function** — never in the browser bundle.
-5. **Bump the app version in `app.yml`** when shipping a change (`-dev.N` during development).
+5. **Keep `package.json` scripts in sync with the app's package manager** — if you change the package manager (or add/adjust `build`/`lint`/`test`), make sure the scripts and the `"packageManager"` field match (see [../package-manager.md](../package-manager.md)).
+6. **Bump the app version in `app.yml`** when shipping a change (`-dev.N` during development).
 
 ## Reference files (this subtree)
 

@@ -113,9 +113,10 @@ When a request comes in against an existing app rather than a new one:
 
 1. **Read `app.yml` first** — it is the source of truth for what components exist and what runtime is targeted
 2. **Check installed SDK versions in `package.json`** before assuming an API exists
-3. **Use the scaffolding commands for new components** even in an existing app — never hand-edit `app.yml` to add a function/job/source/destination
-4. **Bump the version in `app.yml`** when shipping a change; use `-dev.N` suffix during development
-5. **Publishing a new version** automatically upgrades existing installations within the same major version; a major version bump (e.g. `1.x → 2.0`) requires a manual upgrade per account via the ocp CLI
+3. **Match `package.json` scripts to the app's package manager** — the builder runs `build`/`lint`/`test` through the manager in the `packageManager` field; a script that calls a different manager fails the build. See [references/package-manager.md](references/package-manager.md)
+4. **Use the scaffolding commands for new components** even in an existing app — never hand-edit `app.yml` to add a function/job/source/destination
+5. **Bump the version in `app.yml`** when shipping a change; use `-dev.N` suffix during development
+6. **Publishing a new version** automatically upgrades existing installations within the same major version; a major version bump (e.g. `1.x → 2.0`) requires a manual upgrade per account via the ocp CLI
 
 ## Components and Reference Files
 
@@ -156,6 +157,7 @@ When a request comes in against an existing app rather than a new one:
 | ODP objects — `odp.object()`, custom object operations | [references/odp/objects.md](references/odp/objects.md) |
 | ODP GraphQL — `odp.graphql()` queries | [references/odp/graphql.md](references/odp/graphql.md) |
 | ODP lists — list membership management | [references/odp/lists.md](references/odp/lists.md) |
+| Package manager — choosing it, and keeping `package.json` scripts in sync (npm/yarn/pnpm/bun) | [references/package-manager.md](references/package-manager.md) |
 | CLI — register, scaffold, and add components | [references/cli-commands/scaffolding.md](references/cli-commands/scaffolding.md) |
 | CLI — validate the app manifest and TypeScript | [references/cli-commands/validation.md](references/cli-commands/validation.md) |
 | CLI — deploy, publish, install, list functions and installations, and manage jobs | [references/cli-commands/deployment.md](references/cli-commands/deployment.md) |
