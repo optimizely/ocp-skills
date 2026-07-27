@@ -59,13 +59,14 @@ To run non-interactively, pass `--no-prompt` plus every flag marked Required bel
 
 Pass the full template display name exactly as listed:
 
-| Template name         | Use for                                 |
-|-----------------------|-----------------------------------------|
-| `"Basic OCP Sample"`  | OCP app with example functions and jobs |
-| `"Empty OCP Project"` | OCP app with no example code            |
-| `"Basic ODP Sample"`  | ODP app with example functions and jobs |
-| `"Empty ODP Project"` | ODP app with no example code            |
-| `"Opal tool OCP app"` | OCP app that implements Opal tools      |
+| Template name                | Use for                                                                                                                                             |
+|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `"Basic OCP Sample"`         | OCP app with example functions and jobs                                                                                                              |
+| `"Empty OCP Project"`        | OCP app with no example code                                                                                                                         |
+| `"Basic ODP Sample"`         | ODP app with example functions and jobs                                                                                                              |
+| `"Empty ODP Project"`        | ODP app with no example code                                                                                                                         |
+| `"Opal tool OCP app"`        | OCP app that implements Opal tools                                                                                                                   |
+| `"CMS UI Extensions Sample"` | OCP app with CMS UI extensions
 
 ## Add function
 
