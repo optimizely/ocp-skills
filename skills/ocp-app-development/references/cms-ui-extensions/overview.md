@@ -42,7 +42,7 @@ Both are declared in the app's `package.json`. The runtime SDK version an app bu
 5. **Set the package manager and align the scripts** — if the user chose a package manager other than the template's default, set `"packageManager"` in `package.json` accordingly and align the `build`/`lint`/`test` scripts with it (a general OCP-app rule — see [../package-manager.md](../package-manager.md)).
 6. **Validate** — `ocp app validate` runs the SDK validators over the `ui_extensions` block and entry files — see [validation.md](validation.md).
 7. **Test locally** — use the `ocp-local-testing` skill / `ocp dev` to render the extension in a browser before deploying. (The local tool may lag new injection points; verify its support.)
-8. **Package, publish, install** — the standard OCP CLI lifecycle (see the CLI references in this skill). On publish the bundles upload to the CDN and become discoverable to CMS.
+8. **Package, publish, install** — the standard OCP CLI lifecycle (see the CLI references in this skill). On publish the bundles upload to the CDN and become discoverable to CMS. If the app has CMS installation scope, see [per-instance-installation.md](../cli-commands/per-instance-installation.md).
 
 ## Modifying an existing CMS-UI-extension app
 

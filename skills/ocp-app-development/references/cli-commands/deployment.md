@@ -2,7 +2,9 @@
 
 - [Prepare](#prepare) — package, upload, and build the app
 - [Publish](#publish) — make a version available in the App Directory
+- [App info](#app-info) — list versions and their state (which are published)
 - [Install](#install) — install a published version into an account
+- [Upgrade](#upgrade) — move an installation to another version
 - [List installations](#list-installations) — find tracker IDs for installed accounts
 - [List functions](#list-functions) — retrieve deployed webhook URLs
 - [Unpublish](#unpublish) — remove a version from the App Directory
@@ -10,6 +12,8 @@
 - [Job management](#job-management) — trigger, monitor, and stop jobs
 
 Availability zones used by the `-a` flag: `us` (default), `eu`, `au`.
+
+> **Apps with CMS installation scope** are targeted with `--scope <instanceId>`; the tracker ID can then be omitted — see [per-instance-installation.md](per-instance-installation.md).
 
 ## Prepare
 
@@ -38,9 +42,32 @@ Makes a prepared version available in the OCP App Directory.
 ocp directory publish <appId@version>
 ```
 
+## App info
+
+Shows the app's general details and every version with its state, newest first. Use it to find which versions are published — and therefore installable — before running `install` or `upgrade`.
+
+```bash
+ocp directory info <appId>
+```
+
+| Flag | Description                       |
+|------|-----------------------------------|
+| `-a` | Availability zone (default: `us`) |
+
+Version states shown in the **Versions** list:
+
+| State | Meaning |
+| --- | --- |
+| `PUBLISHED` | Published to the App Directory — can be installed |
+| `BUILT` | Prepared successfully but not published yet; the review status is shown next to it (`NOT_STARTED`, `IN_REVIEW`, `APPROVED`, `NOT_REQUIRED`) |
+| `NEW`, `PUBLISHING`, `UNPUBLISHING`, `UPGRADING_RUNTIME` | In progress |
+| `BUILD_FAILED`, `PUBLISHING_FAILED`, `UNPUBLISHING_FAILED` | Failed |
+| `UNPUBLISHED` | Removed from the App Directory |
+| `ABANDONED` | Discarded |
+
 ## Install
 
-Installs a published version into a specific account, creating an installation with unique webhook URLs.
+Installs a published version into a specific account — or, for an app with CMS installation scope, into a specific CMS instance. Each installation gets its own webhook URLs for the app's functions. To find the tracker ID or CMS instance ID, see [accounts.md](accounts.md).
 
 > **Always get explicit user confirmation before running this command.**
 
@@ -48,9 +75,26 @@ Installs a published version into a specific account, creating an installation w
 ocp directory install <appId@version> <trackerId>
 ```
 
-| Flag | Description                       |
-|------|-----------------------------------|
-| `-a` | Availability zone (default: `us`) |
+| Flag      | Description                                                                                   |
+|-----------|-----------------------------------------------------------------------------------------------|
+| `-a`      | Availability zone (default: `us`)                                                             |
+| `--scope` | CMS instance ID for an app with CMS installation scope; the tracker ID can then be omitted (`-s` is short form) |
+
+## Upgrade
+
+Moves an existing installation to another published version.
+
+> **Always get explicit user confirmation before running this command.**
+
+```bash
+ocp directory upgrade <appId> <trackerId> --toVersion=<version>
+```
+
+| Flag          | Description                                                                              |
+|---------------|------------------------------------------------------------------------------------------|
+| `--toVersion` | Version to upgrade to (e.g. `1.0.0`); `-v` is short form                                 |
+| `-a`          | Availability zone (default: `us`)                                                        |
+| `--scope`     | CMS instance ID for an app with CMS installation scope; the tracker ID can then be omitted (`-s` is short form) |
 
 ## List installations
 
@@ -65,7 +109,7 @@ ocp directory listInstalls <appId@version>
 |------|-----------------------------------|
 | `-a` | Availability zone (default: `us`) |
 
-Use this to find tracker IDs needed for `listFunctions` and `jobs trigger`.
+Use this to find the tracker ID of each installation, needed by commands that target an installation (e.g. `listFunctions`, `jobs trigger`). For an app with CMS installation scope, the output adds a **Scope** column with the CMS instance name of each installation. Commands take the CMS instance ID, not the name — to get the ID from the name, see [accounts.md](accounts.md#find-a-cms-instance-id).
 
 ## List functions
 
@@ -75,9 +119,10 @@ Lists the deployed webhook URLs for an installation.
 ocp directory listFunctions <appId> <trackerId>
 ```
 
-| Flag | Description                       |
-|------|-----------------------------------|
-| `-a` | Availability zone (default: `us`) |
+| Flag      | Description                                                        |
+|-----------|--------------------------------------------------------------------|
+| `-a`      | Availability zone (default: `us`)                                  |
+| `--scope` | CMS instance ID for an app with CMS installation scope; the tracker ID can then be omitted |
 
 ## Unpublish
 
@@ -103,9 +148,10 @@ Removes an installation from a specific account.
 ocp directory uninstall <appId> <trackerId> --no-prompt
 ```
 
-| Flag | Description                       |
-|------|-----------------------------------|
-| `-a` | Availability zone (default: `us`) |
+| Flag      | Description                                                        |
+|-----------|--------------------------------------------------------------------|
+| `-a`      | Availability zone (default: `us`)                                  |
+| `--scope` | CMS instance ID for an app with CMS installation scope; the tracker ID can then be omitted |
 
 ## Job management
 
@@ -118,6 +164,7 @@ ocp jobs trigger <appId> <jobName> <trackerId>
 | Flag           | Description                                                             |
 |----------------|-------------------------------------------------------------------------|
 | `--parameters` | JSON string of parameters to pass to the job (e.g. `'{"mode":"full"}'`) |
+| `--scope`      | CMS instance ID for an app with CMS installation scope; the tracker ID can then be omitted     |
 | `-a`           | Availability zone (default: `us`)                                       |
 
 **List job execution history:**
@@ -129,6 +176,7 @@ ocp jobs list <appId>
 | Flag          | Description                                                                            |
 |---------------|----------------------------------------------------------------------------------------|
 | `--trackerId` | Filter by tracker ID                                                                   |
+| `--scope`     | Filter by CMS instance ID (apps with CMS installation scope)                                            |
 | `--function`  | Filter by job name                                                                     |
 | `--status`    | Filter by status: `PENDING`, `SCHEDULED`, `RUNNING`, `COMPLETE`, `ERROR`, `TERMINATED` |
 | `--limit`     | Number of results (default: `50`)                                                      |

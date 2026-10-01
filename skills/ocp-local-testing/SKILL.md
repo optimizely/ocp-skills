@@ -1,7 +1,8 @@
 ---
 name: ocp-local-testing
-version: 0.1.0
 description: Use when running or testing an OCP app locally with `ocp dev` (or the standalone `ocp-local-env` tool) — starting the local dev server and testing functions, jobs, lifecycle and settings form, data sync sources and destinations, or Opal tools in the browser before deploying.
+metadata:
+  version: "0.1.0"
 ---
 
 # OCP Local Environment

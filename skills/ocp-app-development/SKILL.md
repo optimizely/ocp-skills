@@ -1,7 +1,8 @@
 ---
 name: ocp-app-development
-version: 0.1.0
 description: ALWAYS use this skill directly when building, modifying, or debugging an OCP (Optimizely Connect Platform) app — adding functions, jobs, data sync sources or destinations, lifecycle hooks, OAuth flows, settings forms, Opal tools, CMS UI Extensions, ODP schema extensions, or anything that touches app.yml, the @zaiusinc/app-sdk, @zaiusinc/node-sdk, @optimizely-opal/opal-tool-ocp-sdk, @optimizely/cms-extensibility-sdk, or @optimizely/ocp-cms-ui-extensions-sdk. This skill is self-contained and handles all phases including design decisions.
+metadata:
+  version: "0.2.0"
 ---
 
 # OCP App Development
@@ -81,7 +82,8 @@ my-app/
 Every component runs in the context of one OCP account and one installation, identified by:
 
 - **`trackerId`** *(string)* — uniquely identifies an **OCP account** (a customer workspace).
-- **`installId`** *(number)* — uniquely identifies an **installation** of the app. Each account installs the app at most once, giving a 1:1 mapping between `trackerId` and `installId`.
+- **`installId`** *(number)* — uniquely identifies an **installation** of the app. Each account installs the app at most once, giving a 1:1 mapping between `trackerId` and `installId` — except for apps with CMS installation scope (see `scope`).
+- **`scope`** *(string)* — only for apps with CMS installation scope: the **CMS instance ID** the installation belongs to. Such an app is installed once per CMS instance, so one OCP account can hold several installations; the CLI targets each with `--scope <cmsInstanceId>`, and the tracker ID can then be omitted (see [references/cli-commands/per-instance-installation.md](references/cli-commands/per-instance-installation.md)).
 
 ## Prerequisites
 
@@ -160,4 +162,6 @@ When a request comes in against an existing app rather than a new one:
 | Package manager — choosing it, and keeping `package.json` scripts in sync (npm/yarn/pnpm/bun) | [references/package-manager.md](references/package-manager.md) |
 | CLI — register, scaffold, and add components | [references/cli-commands/scaffolding.md](references/cli-commands/scaffolding.md) |
 | CLI — validate the app manifest and TypeScript | [references/cli-commands/validation.md](references/cli-commands/validation.md) |
-| CLI — deploy, publish, install, list functions and installations, and manage jobs | [references/cli-commands/deployment.md](references/cli-commands/deployment.md) |
+| CLI — deploy, publish, list app versions and their state, install, upgrade, list functions and installations, and manage jobs | [references/cli-commands/deployment.md](references/cli-commands/deployment.md) |
+| CLI — find tracker IDs, availability zones, and CMS instance IDs the user can reach | [references/cli-commands/accounts.md](references/cli-commands/accounts.md) |
+| CLI — check if an app has CMS installation scope, and target an installation with `--scope` | [references/cli-commands/per-instance-installation.md](references/cli-commands/per-instance-installation.md) |
