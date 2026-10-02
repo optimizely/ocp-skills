@@ -1,6 +1,6 @@
 # Frontend runtime SDK — `@optimizely/cms-extensibility-sdk`
 
-The browser-side SDK the extension bundle imports. It is **injection-point agnostic**: the same `register(...)` API is used for `sidebar` and `view` alike — the surface is decided by `app.yml` + the entry-file name, not by the React code.
+The browser-side SDK the extension bundle imports. It is **injection-point agnostic**: the same `register(...)` API is used for `sidebar`, `view` and `property-editor` alike — the surface is decided by `app.yml` + the entry-file name, not by the React code. The one surface-specific API is [`context.property`](#contextproperty--property-editors), which only a `property-editor` uses.
 
 ## `register`
 
@@ -25,7 +25,7 @@ register((context) => (
 
 - Call `register` exactly once per entry file, at module top level.
 - Wrap the UI in the design-system provider (`AxiomProvider` from `@optiaxiom/react`) so it inherits CMS look-and-feel.
-- The same pattern is used for a `sidebar` entry (`*.sidebar.tsx`) — only the file name and the `app.yml` injection point differ.
+- The same pattern is used for a `sidebar` entry (`*.sidebar.tsx`) and a `property-editor` entry (`*.property-editor.tsx`) — only the file name and the `app.yml` injection point differ.
 
 ## UI components — build with `@optiaxiom/react`
 
@@ -53,7 +53,7 @@ import {AxiomProvider, Flex, TextField, Button, Grid} from '@optiaxiom/react';
 
 ## `ExtensionContext`
 
-The context handle passed to the factory. Key members on `context.extension`:
+The context handle passed to the factory has three namespaces: `context.extension` (below), `context.content` (the content item being edited — `get()` / `subscribe()`, resolving to `{key?, version?, locale?, publicUrl?} | null`), and `context.property` (property editors only — see [below](#contextproperty--property-editors)). Key members on `context.extension`:
 
 | Member | Purpose |
 | --- | --- |
@@ -119,6 +119,81 @@ Rules of thumb for the sandbox:
 - **Assume the sandbox is restrictive**, not just for forms. Don't rely on top-level navigation, `window.open`/popups, or downloads via anchor `download`. Drive everything through the SDK (`invokeFunction`) and in-app state; open external links with `target="_blank" rel="noopener noreferrer"` (plain links render fine).
 - **Surface failures yourself.** Because blocked actions produce only a console error, add visible error state so a dead action is diagnosable.
 
+## `context.property` — property editors
+
+A `property-editor` extension edits the value of the one content property CMS bound it to. Requires `@optimizely/cms-extensibility-sdk` **>= 1.1.0** — check `package.json` first; 1.0.x has no `context.property` at all.
+
+| Member | Purpose |
+| --- | --- |
+| `get(): Promise<PropertyState>` | One-time snapshot of the bound property. |
+| `set(value: unknown): Promise<PropertySetResult>` | Writes a new value. Resolves to `{success: boolean; error?: string}` — check `success`; a rejected write does not throw. |
+| `subscribe(cb: (state: PropertyState) => void): () => void` | Reports later changes to the property. Returns an unsubscribe function — call it in the effect cleanup. |
+
+```ts
+interface PropertyState {
+  value: unknown;                      // current value; write back a value matching metadata.property_type
+  readonly: boolean;                   // true → CMS won't accept edits; disable inputs, don't call set()
+  settings?: Record<string, unknown>;  // optional settings CMS passes for the property
+}
+```
+
+Outside a property editor (`sidebar`, `view`) these calls resolve to an empty, read-only state — never use `context.property` there.
+
+```tsx
+// src/cms-ui-extensions/brand/BrandColorPicker.property-editor.tsx
+import {AxiomProvider, Box, Text} from '@optiaxiom/react';
+import {register, type ExtensionContext, type PropertyState} from '@optimizely/cms-extensibility-sdk';
+import {useEffect, useState} from 'react';
+
+function BrandColorPicker({context}: {context: ExtensionContext}) {
+  const [state, setState] = useState<PropertyState | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    // Initial value — subscribe() only reports changes made AFTER subscribing.
+    void context.property.get().then((next) => { if (active) setState(next); });
+    const unsubscribe = context.property.subscribe(setState);
+    void context.extension.setReady();
+    return () => { active = false; unsubscribe(); };
+  }, [context]);
+
+  const save = async (value: string) => {
+    const result = await context.property.set(value);
+    setError(result.success ? null : (result.error ?? 'CMS rejected the value.'));
+  };
+
+  return (
+    <Box>
+      {/* Axiom has no color input; a raw <input type="color"> is the fallback. */}
+      <input
+        type="color"
+        disabled={!state || state.readonly}
+        value={typeof state?.value === 'string' ? state.value : '#000000'}
+        onChange={(e) => void save(e.target.value)}
+      />
+      {error && <Text color="fg.error">{error}</Text>}
+    </Box>
+  );
+}
+
+register((context) => (
+  <AxiomProvider>
+    <BrandColorPicker context={context} />
+  </AxiomProvider>
+));
+```
+
+Property-editor rules:
+
+- **Always `get()` first, then `subscribe()`.** Subscribing alone leaves the editor blank until something else changes the value.
+- **Respect `readonly`.** Disable inputs and skip `set()` when it is `true`.
+- **Surface `set()` failures.** `success: false` comes with an optional `error`; show it — nothing else tells the editor the value was not saved.
+- **Write the declared type.** The value passed to `set()` should match `metadata.property_type` in `app.yml` (e.g. a string for `string`, a boolean for `boolean`).
+- **Keep it field-sized.** The editor renders in place of a single form field, not a panel — no wide layouts.
+- **Backend calls work as usual** — e.g. search an external system with `invokeFunction()` and store the selected item's ID via `set()`.
+- **The sandbox rules above apply** — drive saves from `onClick` / `onChange` / `onKeyDown`, never a `<form>` submit.
+
 ## `view`-specific guidance
 
 A `view` extension is a full page, not scoped to a content item. Do not assume a "current content item" in a `view`. It can still call the same backend function and use the same context API; it just renders more like a standalone app page (wider layout, its own navigation/pagination).
@@ -127,6 +202,7 @@ A `view` extension is a full page, not scoped to a content item. Do not assume a
 
 - **Do** keep API keys, tokens, and third-party calls in the backend function.
 - **Do** name the file `<EntryPoint>.<injectionPoint>.tsx` so it is discovered.
+- **Do** read a property editor's initial value with `context.property.get()` and check the `success` of every `set()`.
 - **Do** build the UI with `@optiaxiom/react` components (wrapped in `AxiomProvider`); drop to raw HTML only where Axiom has no equivalent. See [UI components](#ui-components--build-with-optiaxiomreact).
 - **Don't** import Node-only APIs into the browser bundle.
 - **Don't** call `register` more than once per entry file.

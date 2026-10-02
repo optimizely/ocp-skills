@@ -8,21 +8,59 @@ CMS UI extensions are declared under a top-level `ui_extensions:` key. The block
 runtime: node22-cms-ext          # required for CMS UI extensions
 
 ui_extensions:
-  <injectionPoint>:              # one of UI_EXTENSION_INJECTION_POINTS (sidebar | view)
+  <injectionPoint>:              # one of UI_EXTENSION_INJECTION_POINTS (sidebar | view | property-editor)
     - name: <unique-name>        # unique across the WHOLE ui_extensions block
       entry_point: <EntryPoint>  # unique across the WHOLE block; matches the entry-file <EntryPoint>
       display_name: <label>      # non-blank; shown to CMS users
+      metadata:                  # property-editor only (required there)
+        property_type: <type>    # string | richtext | integer | float | boolean
+        property_format: <fmt>   # optional; only `string` accepts one (shortstring)
 ```
 
-Each injection point maps to a **list** of extension items. Each item has exactly three fields:
+Each injection point maps to a **list** of extension items. Each item has these fields:
 
 | Field | Required | Notes |
 | --- | --- | --- |
 | `name` | yes | Stable identifier for the extension. Unique across all injection points. |
 | `entry_point` | yes | Matches the `<EntryPoint>` segment of the entry file (`<EntryPoint>.<injectionPoint>.tsx`) and becomes the CDN bundle filename. Unique across all injection points. |
 | `display_name` | yes | Human-readable label; must not be blank. |
+| `metadata` | `property-editor` only | String-to-string map passed through to CMS verbatim. Required on `property-editor` entries (see below); `sidebar`/`view` entries do not use it. |
 
-Unknown injection-point keys and unknown item fields are rejected by the schema (the schema is generated from `UI_EXTENSION_INJECTION_POINTS` with `additionalProperties: false`).
+Unknown injection-point keys and unknown item fields are rejected by the schema (the schema is generated from `UI_EXTENSION_INJECTION_POINTS` with `additionalProperties: false`). `metadata` itself accepts arbitrary string keys; only the `property-editor` keys below are validated.
+
+## Property editor metadata
+
+A `property-editor` entry declares which CMS properties it edits:
+
+| Key | Required | Notes |
+| --- | --- | --- |
+| `property_type` | yes | The property type the editor edits. |
+| `property_format` | no | A refinement of the type. Omit it unless the type supports one. |
+
+Supported combinations (the `ALLOWED_PROPERTY_TYPES` map exported from `@optimizely/ocp-cms-ui-extensions-sdk`):
+
+| `property_type` | `property_format` |
+| --- | --- |
+| `string` | omitted, or `shortstring` |
+| `richtext` | omitted |
+| `integer` | omitted |
+| `float` | omitted |
+| `boolean` | omitted |
+
+Values are case-insensitive. Any other combination is a **hard error** in `ocp app validate` — CMS would otherwise silently skip the editor. One entry targets one type; to edit several types, declare several entries.
+
+```yaml
+ui_extensions:
+  property-editor:
+    - name: brand-color-picker
+      entry_point: BrandColorPicker
+      display_name: Brand Color Picker
+      metadata:
+        property_type: string
+        property_format: shortstring
+```
+
+Entry file: `src/cms-ui-extensions/<group>/BrandColorPicker.property-editor.tsx`. Requires `@optimizely/ocp-cms-ui-extensions-sdk` >= 1.1.0-beta.1 — earlier versions reject both the `property-editor` key and `metadata`.
 
 ## Full example
 

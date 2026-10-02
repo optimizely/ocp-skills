@@ -12,6 +12,7 @@ Currently supported:
 | --- | --- | --- |
 | `sidebar` | A panel in the CMS content-editing sidebar | Yes — rendered alongside the content being edited |
 | `view` | A full-page widget with its own page/route in CMS | No — a standalone page, not tied to one content item |
+| `property-editor` | Replaces the built-in editor for **one content property** of a declared type | Yes — bound to the item *and* to one property of it; reads/writes that value via `context.property` |
 
 Other surfaces (e.g. `toolbar`, `content-editor`, `settings`) are **not** currently host-supported and are absent from the tuple. Do not declare them until they appear there — the schema will reject unknown keys and the CMS host will not mount them.
 
@@ -38,10 +39,13 @@ ui_extensions:
 
 The only constraint is global uniqueness of `name` and `entry_point` across the whole block (see validation.md).
 
-## `sidebar` vs `view` — choosing
+## Choosing an injection point
 
 - Use **`sidebar`** when the UI augments the current content item (previews, status, related-record lookups) — it renders in context while editing.
 - Use **`view`** for a standalone tool that is not about one specific content item (a browse/gallery page, a dashboard, an admin screen). A `view` gets its own page in CMS, so it should not assume a "current content item" context.
+- Use **`property-editor`** when a single field needs a richer input than CMS provides — a color picker for a string, a slider for an integer, an external-system lookup that stores an ID. It owns exactly one value and is sized like a form field, so keep the UI compact. It must declare `metadata.property_type` (see [app-yml.md](app-yml.md#property-editor-metadata)); one entry targets one type, so declare one entry per type you want to edit.
+
+A `property-editor` is **not** surface-agnostic like `sidebar`/`view`: its code depends on `context.property`, which returns an empty, read-only state outside a property editor. Do not move a property editor to another injection point by renaming the file.
 
 ## Why `entry_point` uniqueness matters
 

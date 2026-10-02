@@ -41,9 +41,9 @@ The app exposes capabilities of an external service as AI tools in the Opal assi
 
 ### CMS UI Extension app
 
-The app renders custom UI **inside Optimizely CMS (SaaS)** at a designated surface (an *injection point* such as a sidebar panel or a full-page view). See [references/cms-ui-extensions/overview.md](references/cms-ui-extensions/overview.md).
+The app renders custom UI **inside Optimizely CMS (SaaS)** at a designated surface (an *injection point* such as a sidebar panel, a full-page view, or a custom editor for one content property). See [references/cms-ui-extensions/overview.md](references/cms-ui-extensions/overview.md).
 
-**Use when:** you want to surface app functionality directly in the CMS authoring experience — for example, a media browser, a preview/status panel, or a full-page dashboard for CMS users.
+**Use when:** you want to surface app functionality directly in the CMS authoring experience — for example, a media browser, a preview/status panel, a full-page dashboard, or a custom field editor (color picker, slider, external-ID lookup) for CMS users.
 
 **Decide the app type before writing any code** — it shapes the entire implementation. Ask: who decides which two systems are connected? Developer fixes both → end-to-end. Customer chooses at sync time → data sync. Writing straight to ODP → ODP app. No sync, only AI tool calls → Opal tool. Rendering UI inside Optimizely CMS → CMS UI Extension.
 
@@ -143,12 +143,12 @@ When a request comes in against an existing app rather than a new one:
 | Opal `@interaction` decorator — Proteus card button handlers, `InteractionResult` from `@tool` for soft messages | [references/opal-tools/interaction.md](references/opal-tools/interaction.md) |
 | Opal `@resource` decorator — Proteus UI rich result cards, components, data binding | [references/opal-tools/resource.md](references/opal-tools/resource.md) |
 | CMS UI Extensions — overview, model, two SDKs, workflow (custom UI inside Optimizely CMS) | [references/cms-ui-extensions/overview.md](references/cms-ui-extensions/overview.md) |
-| CMS UI Extensions injection points — `sidebar`, `view`, multiplicity, `UI_EXTENSION_INJECTION_POINTS` | [references/cms-ui-extensions/injection-points.md](references/cms-ui-extensions/injection-points.md) |
-| CMS UI Extensions app structure — entry-file naming (`*.sidebar.tsx`/`*.view.tsx`), Vite, build output | [references/cms-ui-extensions/app-structure.md](references/cms-ui-extensions/app-structure.md) |
-| CMS UI Extensions `app.yml` — the `ui_extensions` block shape and fields | [references/cms-ui-extensions/app-yml.md](references/cms-ui-extensions/app-yml.md) |
-| CMS UI Extensions frontend SDK — `register`, `ExtensionContext`, `invokeFunction`, `setReady` | [references/cms-ui-extensions/frontend-sdk.md](references/cms-ui-extensions/frontend-sdk.md) |
+| CMS UI Extensions injection points — `sidebar`, `view`, `property-editor`, multiplicity, `UI_EXTENSION_INJECTION_POINTS` | [references/cms-ui-extensions/injection-points.md](references/cms-ui-extensions/injection-points.md) |
+| CMS UI Extensions app structure — entry-file naming (`*.sidebar.tsx`/`*.view.tsx`/`*.property-editor.tsx`), Vite, build output | [references/cms-ui-extensions/app-structure.md](references/cms-ui-extensions/app-structure.md) |
+| CMS UI Extensions `app.yml` — the `ui_extensions` block shape and fields, `property-editor` `metadata` | [references/cms-ui-extensions/app-yml.md](references/cms-ui-extensions/app-yml.md) |
+| CMS UI Extensions frontend SDK — `register`, `ExtensionContext`, `invokeFunction`, `setReady`, `context.property` (property editors) | [references/cms-ui-extensions/frontend-sdk.md](references/cms-ui-extensions/frontend-sdk.md) |
 | CMS UI Extensions backend proxy — `App.Function` with `accepts: cms_ui_extension` | [references/cms-ui-extensions/backend-proxy.md](references/cms-ui-extensions/backend-proxy.md) |
-| CMS UI Extensions validation — uniqueness rules, common errors | [references/cms-ui-extensions/validation.md](references/cms-ui-extensions/validation.md) |
+| CMS UI Extensions validation — uniqueness rules, property type whitelist, common errors | [references/cms-ui-extensions/validation.md](references/cms-ui-extensions/validation.md) |
 | Storage — `settings`, `secrets`, `kvStore`, `sharedKvStore` | [references/app-sdk/storage.md](references/app-sdk/storage.md) |
 | Notifications — `notifications.info/success/warn/error` | [references/app-sdk/notifications.md](references/app-sdk/notifications.md) |
 | Logger — `logger.debug/info/warn/error` | [references/app-sdk/logging.md](references/app-sdk/logging.md) |
