@@ -14,7 +14,8 @@ my-app/
     ├── cms-ui-extensions/        # FRONTEND: extension entry files + shared UI code
     │   ├── <group>/
     │   │   ├── <Entry>.sidebar.tsx
-    │   │   └── <Entry>.view.tsx
+    │   │   ├── <Entry>.view.tsx
+    │   │   └── <Entry>.property-editor.tsx
     │   └── common/               # shared helpers (runtime helpers, clipboard, etc.)
     └── backend/
         ├── functions/
@@ -68,11 +69,13 @@ Both SDKs appear in `dependencies`:
 ```json
 {
   "dependencies": {
-    "@optimizely/cms-extensibility-sdk": "1.0.1",
-    "@optimizely/ocp-cms-ui-extensions-sdk": "1.0.0-beta.4"
+    "@optimizely/cms-extensibility-sdk": "1.1.0",
+    "@optimizely/ocp-cms-ui-extensions-sdk": "1.1.0-beta.1"
   }
 }
 ```
+
+These are the minimum versions for a `property-editor` extension: `cms-extensibility-sdk` 1.1.0 adds `context.property`, and `ocp-cms-ui-extensions-sdk` 1.1.0-beta.1 adds the `property-editor` injection point and `metadata`. Apps with only `sidebar`/`view` extensions work on older versions, but check the installed versions before adding a property editor to an existing app.
 
 ### The build script
 
